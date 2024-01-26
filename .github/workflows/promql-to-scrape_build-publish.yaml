@@ -1,10 +1,12 @@
 name: Build and push Docker image
 
 on:
+  push:
+    branches: ["main"]
   workflow_call:
 
 env:
-  IMAGE_NAME: promql-to-dd-go
+  IMAGE_NAME: promql-to-scrape
 
 jobs:
   push:
@@ -15,13 +17,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to registry
         # This is where you will update the personal access token to GITHUB_TOKEN
@@ -43,7 +45,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v3
         with:
-          context: cloud/observability/promql-to-dd-go
+          context: cloud/observability/promql-to-scrape
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
