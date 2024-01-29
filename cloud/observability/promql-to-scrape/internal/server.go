@@ -79,11 +79,12 @@ func (s *PromToScrapeServer) queryMetrics() {
 		slog.Error("failed to query metrics", "error", err)
 		return
 	}
+
 	s.Lock()
 	s.data = SamplesToString(queriedMetrics)
 	s.lastSuccessfulTime = time.Now()
 	s.Unlock()
-	slog.Debug("successful metric retrieval", "time", time.Since(start))
+	slog.Debug(fmt.Sprintf("successfully retrieved %d metrics", len(queriedMetrics)), "time", time.Since(start))
 }
 
 // Start runs the embedded http.Server.
