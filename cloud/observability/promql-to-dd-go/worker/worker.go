@@ -79,21 +79,30 @@ func (w *Worker) do(errorChan chan<- error) {
 	}
 	log.Printf("Received %d histogram series\n", len(histogramSeries))
 
-	// rates
-	rateSeries := []datadogV2.MetricSeries{}
+	// rates/counts
+	rateCountSeries := []datadogV2.MetricSeries{}
 	for _, counterName := range counters {
+		// rates per 1 minute
 		promql := fmt.Sprintf(RatePromQL, counterName)
 		matrix, err := w.QueryMetrics(promql, queryRange)
 		if err != nil {
 			errorChan <- err
 			return
 		}
-		rateSeries = append(rateSeries, PromCountToDatadogRate(counterName, matrix)...)
+		rateCountSeries = append(rateCountSeries, PromCountToDatadogRate(counterName, matrix)...)
+
+		// counts
+		matrix, err = w.QueryMetrics(counterName, queryRange)
+		if err != nil {
+			errorChan <- err
+			return
+		}
+		rateCountSeries = append(rateCountSeries, PromCountToDatadogCount(counterName, matrix)...)
 	}
-	log.Printf("Received %d rate series\n", len(rateSeries))
+	log.Printf("Received %d rate/count series\n", len(rateCountSeries))
 
 	log.Printf("Submitting to Datadog\n")
-	series := append(histogramSeries, rateSeries...)
+	series := append(histogramSeries, rateCountSeries...)
 	err = w.SubmitMetrics(series)
 	if err != nil {
 		errorChan <- err

@@ -38,6 +38,11 @@ func PromCountToDatadogRate(name string, matrix model.Matrix) []datadogV2.Metric
 	return matrixToSeries(name, metricType, matrix)
 }
 
+func PromCountToDatadogCount(name string, matrix model.Matrix) []datadogV2.MetricSeries {
+	metricType := datadogV2.METRICINTAKETYPE_COUNT
+	return matrixToSeries(name, metricType, matrix)
+}
+
 func matrixToSeries(name string, metricType datadogV2.MetricIntakeType, matrix model.Matrix) []datadogV2.MetricSeries {
 	series := make([]datadogV2.MetricSeries, len(matrix))
 	for i, stream := range matrix {
