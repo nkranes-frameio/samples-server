@@ -21,7 +21,7 @@ func main() {
 	insecureSkipVerify := set.Bool("insecure-skip-verify", false, "Skip verification of the server's certificate and host name")
 	matrixPrefix := set.String("matrix-prefix", "temporal_cloud_", "Prefix of the metrics to be queried and send to Datadog")
 	stepDuration := set.Int("step-duration-seconds", 60, "The step between metrics")
-	queryInterval := set.Int("query-interval-seconds", 600, "Interval between each Prometheus query")
+	queryInterval := set.Int("query-interval-seconds", 60, "Interval between each Prometheus query")
 
 	if err := set.Parse(os.Args[1:]); err != nil {
 		log.Fatalf("failed parsing args: %s", err)
